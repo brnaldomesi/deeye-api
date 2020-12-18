@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-  public function checkUser(Request $request): Response
+  public function checkUser(Request $request)
   {
     $request->validate([
       'email' => 'required|email'
@@ -19,13 +19,13 @@ class UserController extends Controller
     $user = User::where('email', $request->email)->first();
 
     if($user) {
-      return response(['status' => 200, 'msg' => 'Email exist']);
+      return response()->json(['status' => 200, 'msg' => 'Email exist']);
     } else {
-      return response(['status' => 404, 'msg' => 'Email not exist']);
+      return response()->json(['status' => 404, 'msg' => 'Email not exist']);
     }
   }
 
-  public function signup(Request $request): Response
+  public function signup(Request $request)
   {
     $request->validate([
       'email' => 'required|email',
@@ -38,10 +38,10 @@ class UserController extends Controller
     $user->password = Hash::make($request->password);
     $user->save();
 
-    return response(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
+    return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
   }
 
-  public function login(Request $request): Response
+  public function login(Request $request)
   {
     $request->validate([
       'email' => 'required|email',
@@ -57,6 +57,6 @@ class UserController extends Controller
       ]);
     }
 
-    return response(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
+    return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
   }
 }
