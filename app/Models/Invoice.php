@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MissingPost extends Model
+class Invoice extends Model
 {
-    public function post()
+    public function profile()
     {
-        return $this->belongsTo('App\Models\Post', 'post_id');
+        return $this->belongsTo('App\Models\Profile', 'profile_id');
     }
 
     public function activity()
     {
         return $this->belongsTo('App\Models\Activity', 'activity_id');
     }
+
 }

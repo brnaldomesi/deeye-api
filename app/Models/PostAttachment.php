@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MissingPost extends Model
+class PostAttachment extends Model
 {
     public function post()
     {
         return $this->belongsTo('App\Models\Post', 'post_id');
     }
 
-    public function activity()
+    public function attachment()
     {
-        return $this->belongsTo('App\Models\Activity', 'activity_id');
+        return $this->hasOne('App\Models\Attachment', 'attachment_id');
     }
 }
