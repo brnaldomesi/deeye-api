@@ -26,3 +26,7 @@ Route::prefix('auth')->group(function () {
   Route::post('/login', [UserController::class , 'login']);
   Route::post('/signup', [UserController::class , 'signup']);
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+  Route::get('/posts', [PostController::class , 'index']);
+});
