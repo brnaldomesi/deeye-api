@@ -49,7 +49,11 @@ class Comment extends Model
 
     public function getLikedAttribute()
     {
-        $profile = Profile::where('user_id', Auth::user()->id)->first();
+        $user = Auth::user();
+        if (!$user) {
+            return false;
+        }
+        $profile = Profile::where('user_id', $user->id)->first();
         return $this->activity->likes()->where('profile_id', $profile->id)->count() > 0;
     }
 
