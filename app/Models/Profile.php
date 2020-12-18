@@ -10,4 +10,9 @@ class Profile extends Model
     {
         return $this->belongsTo('App\Models\User', 'user_id');
     }
+
+    public function bookmarks()
+    {
+        return $this->belongsToMany('App\Model\Post', 'bookmarks', 'profile_id', 'post_id');
+    }
 }
