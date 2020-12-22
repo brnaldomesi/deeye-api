@@ -4,64 +4,82 @@ namespace App\Http\Controllers\Api\v1\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Profile;
 
 class UserController extends Controller
 {
-  public function checkUser(Request $request)
-  {
-    $request->validate([
-      'email' => 'required|email'
-    ]);
+	public function checkUser(Request $request)
+	{
+		$request->validate([
+			'email' => 'required|email'
+		]);
 
-    $user = User::where('email', $request->email)->first();
+		$user = User::where('email', $request->email)->first();
 
-    if($user) {
-      return response()->json(['status' => 200, 'msg' => 'Email exist']);
-    } else {
-      return response()->json(['status' => 404, 'msg' => 'Email not exist']);
-    }
-  }
+		if($user) {
+			return response()->json(['status' => 200, 'msg' => 'Email exist']);
+		} else {
+			return response()->json(['status' => 404, 'msg' => 'Email not exist']);
+		}
+	}
 
-  public function signup(Request $request)
-  {
-    $request->validate([
-      'email' => 'required|email',
-      'password' => 'required',
-      'deviceName' => 'required'
-    ]);
+	public function signup(Request $request)
+	{
+		$rules = [
+			'email' => 'required|email',
+			'password' => 'required',
+			'deviceName' => 'required'
+		];
+		$validator = Validator::make($request->all(), $rules);
+		
+		if ($validator->fails()) {
+				return response($validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
+		}
 
-    $user = new User;
-    $user->email = $request->email;
-    $user->password = Hash::make($request->password);
-    $user->save();
+		if (User::where('email', $request->email)->count() > 0)
+		{
+			return response()->json(['status' => 400, 'msg' => 'Email exist']);
+		}
 
-    $profile = new Profile;
-    $profile->user_id = $user->id;
-    $profile->save();
+		$user = new User;
+		$user->email = $request->email;
+		$user->password = Hash::make($request->password);
+		$user->save();
 
-    return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
-  }
+		$profile = new Profile;
+		$profile->user_id = $user->id;
+		$profile->save();
 
-  public function login(Request $request)
-  {
-    $request->validate([
-      'email' => 'required|email',
-      'password' => 'required',
-      'deviceName' => 'required',
-    ]);
+		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
+	}
 
-    $user = User::where('email', $request->email)->first();
+	public function login(Request $request)
+	{
+		$rules = [
+			'email' => 'required|email',
+			'password' => 'required',
+			'deviceName' => 'required'
+		];
+		$validator = Validator::make($request->all(), $rules);
+		
+		if ($validator->fails()) {
+				return response($validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
+		}
 
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-      throw ValidationException::withMessages([
-        'email' => ['The provided credentials are incorrect.'],
-      ]);
-    }
+		$user = User::where('email', $request->email)->first();
 
-    return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
-  }
+		if (! $user || ! Hash::check($request->password, $user->password)) {
+			return response(json_encode([
+				'email' => ['The provided credentials are incorrect.'],
+			]), 400)->header('Content-Type', 'text/json');
+		}
+
+		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
+	}
 }

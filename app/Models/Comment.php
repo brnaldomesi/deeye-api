@@ -12,7 +12,7 @@ class Comment extends Model
     ];
 
     protected $visible = [
-        'id', 'profile_id', 
+        'id', 'profile_id', 'text',
         'author', 'likes_count', 'liked',
         'comments_count'
     ];
@@ -24,7 +24,7 @@ class Comment extends Model
 
     public function activity()
     {
-        return $this->hasOne('App\Models\Activity', 'activity_id');
+        return $this->belongsTo('App\Models\Activity', 'activity_id');
     }
 
     public function post()

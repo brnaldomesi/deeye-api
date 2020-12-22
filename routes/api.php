@@ -30,5 +30,12 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
   Route::get('/posts', 'App\Http\Controllers\Api\v1\PostController@index');
   Route::post('/posts', 'App\Http\Controllers\Api\v1\PostController@store');
+  
   Route::post('/attachments', 'App\Http\Controllers\Api\v1\AttachmentController@store');
+  
+  Route::get('/posts/{postId}/comments', 'App\Http\Controllers\Api\v1\PostCommentController@index');
+  Route::post('/posts/{postId}/comments', 'App\Http\Controllers\Api\v1\PostCommentController@store');
+
+  Route::get('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@index');
+  Route::post('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@store');
 });

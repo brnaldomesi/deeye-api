@@ -131,6 +131,7 @@ class Post extends Model
 
     public function getRecentCommentsAttribute()
     {
-        return $this->comments()->orderBy('created', 'desc')->limit(5);
+        $limit = config('app.pagination_limit');
+        return $this->comments()->whereNull('parent_id')->orderBy('created_at', 'desc')->paginate($limit);
     }
 }
