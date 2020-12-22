@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api\v1\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Profile;
 
 class UserController extends Controller
 {
@@ -37,6 +38,10 @@ class UserController extends Controller
     $user->email = $request->email;
     $user->password = Hash::make($request->password);
     $user->save();
+
+    $profile = new Profile;
+    $profile->user_id = $user->id;
+    $profile->save();
 
     return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
   }

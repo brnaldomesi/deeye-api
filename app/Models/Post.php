@@ -11,24 +11,25 @@ class Post extends Model
         'likes_count', 'liked', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors',
         'recent_comments',
+        'author', 'missing_post_content', 'post_attachments', 'source', 'bookmarkers_count',
     ];
 
     protected $visible = [
         'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'created_at', 'updated_at',
         'author', 'likes_count', 'liked', 'shares_count', 'shared', 'saved',
-        'comments_count', 'recent_commentors',
+        'comments_count', 'recent_commentors', 'bookmarkers_count',
         'recent_comments',
-        'missing_post', 'attachments', 'source'
+        'missing_post_content', 'post_attachments', 'post_source'
     ];
 
-    public function author()
+    public function writer()
     {
         return $this->belongsTo('App\Models\Profile', 'profile_id');
     }
 
     public function activity()
     {
-        return $this->hasOne('App\Models\Activity', 'activity_id');
+        return $this->belongsTo('App\Models\Activity', 'activity_id');
     }
 
     public function missingPost()
@@ -48,12 +49,37 @@ class Post extends Model
 
     public function comments()
     {
-        return $this->hasMany('App\Models\Comments', 'post_id');
+        return $this->hasMany('App\Models\Comment', 'post_id');
     }
 
     public function bookmarkers()
     {
-        return $this->belongsToMany('App\Models\Profile', 'post_id', 'profile_id');
+        return $this->belongsToMany('App\Models\Profile', 'bookmarks', 'post_id', 'profile_id');
+    }
+
+    public function getAuthorAttribute()
+    {
+        return $this->writer;
+    }
+
+    public function getMissingPostContentAttribute()
+    {
+        return $this->missing_post;
+    }
+
+    public function getPostAttachmentsAttribute()
+    {
+        return $this->attachments;
+    }
+
+    public function getPostSourceAttribute()
+    {
+        return $this->soure;
+    }
+
+    public function getBookmarkersCountAttribute()
+    {
+        return $this->bookmarkers;
     }
 
     public function getLikesCountAttribute()

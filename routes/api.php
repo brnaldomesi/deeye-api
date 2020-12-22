@@ -23,10 +23,12 @@ use App\Http\Controllers\Api\v1\Auth\UserController;
 
 Route::prefix('auth')->group(function () {
   Route::post('/checkUser', [UserController::class , 'checkUser']);
-  Route::post('/login', [UserController::class , 'login']);
+  Route::post('/login', [UserController::class , 'login'])->name('login');
   Route::post('/signup', [UserController::class , 'signup']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-  Route::get('/posts', [PostController::class , 'index']);
+  Route::get('/posts', 'App\Http\Controllers\Api\v1\PostController@index');
+  Route::post('/posts', 'App\Http\Controllers\Api\v1\PostController@store');
+  Route::post('/attachments', 'App\Http\Controllers\Api\v1\AttachmentController@store');
 });

@@ -11,7 +11,7 @@ class PostAttachment extends Model
     ];
 
     protected $visible = [
-        'id', 'post_id', 'attachment_type', 'path', 'file_type',
+        'id', 'attachment_type', 'path', 'file_type',
     ];
 
     public function post()
@@ -21,7 +21,7 @@ class PostAttachment extends Model
 
     public function attachment()
     {
-        return $this->hasOne('App\Models\Attachment', 'attachment_id');
+        return $this->belongsTo('App\Models\Attachment', 'attachment_id');
     }
 
     public function getPathAttribute()
