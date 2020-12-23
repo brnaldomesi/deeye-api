@@ -22,12 +22,12 @@ class AttachmentRepository
             $hashed = md5(time());
             $extension = File::extension($filename);
             
-            $public_path = "uploads/$fileType/$hashed.$extension";
-            $save_path = 'app/public/' . $public_path;
+            $public_path = "uploads/$fileType";
+            $save_path = 'public/' . $public_path;
     
-            $file->store($save_path);
+            $file->storeAs($save_path, "$hashed.$extension");
     
-            $att->path = $public_path;
+            $att->path = $public_path . "/$hashed.$extension";
             
         }
         
