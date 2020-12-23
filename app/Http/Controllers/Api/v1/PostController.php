@@ -102,6 +102,20 @@ class PostController extends Controller
         return response(json_encode($post), 201)->header('Content-Type', 'text/json');
     }
 
+    public function show(Request $request, $id)
+    {
+        $post = Post::find($id);
+
+        if (!$post)
+        {
+            return response(json_encode([
+                'message' => 'No such post'
+            ]), 404)->header('Content-Type', 'text/json');
+        } else {
+            return response(json_encode($post), 200)->header('Content-Type', 'text/json');
+        }
+    }
+
     public function update(Request $request)
     {
 

@@ -31,8 +31,8 @@ class PostRepository
         $post->profile_id = $user->profile->id;
         $post->save();
 
-        if ($values['post_type'] == 'MissingPost') {
-            createMissingPost($values['missing_post'], $post);
+        if ($values['post_type'] == 'MissingPerson') {
+            $this->createMissingPost($values['missing_post'], $post);
         }
         return $post;
     }
@@ -46,7 +46,7 @@ class PostRepository
             'circumstance', 'contact_email', 'contact_phone_number1', 'contact_phone_number2', 'verification_groupchat_link', 'company_name',
         ];
         $mpost->post_id = $post->id;
-        foreach ($params as $key => $value) {
+        foreach ($params as $key) {
             if (isset($values[$key])) {
                 $mpost->$key = $values[$key];
             }

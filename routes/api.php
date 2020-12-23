@@ -29,6 +29,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
   Route::get('/posts', 'App\Http\Controllers\Api\v1\PostController@index');
+  Route::get('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@show');
   Route::post('/posts', 'App\Http\Controllers\Api\v1\PostController@store');
   
   Route::post('/attachments', 'App\Http\Controllers\Api\v1\AttachmentController@store');

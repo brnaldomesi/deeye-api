@@ -34,7 +34,7 @@ class Post extends Model
 
     public function missingPost()
     {
-        return $this->hasOne('App\Models\MissingPost', 'post_id');
+        return $this->hasOne('App\Models\MissingPost');
     }
 
     public function attachments()
@@ -64,7 +64,7 @@ class Post extends Model
 
     public function getMissingPostContentAttribute()
     {
-        return $this->missing_post;
+        return $this->missingPost;
     }
 
     public function getPostAttachmentsAttribute()
@@ -132,6 +132,6 @@ class Post extends Model
     public function getRecentCommentsAttribute()
     {
         $limit = config('app.pagination_limit');
-        return $this->comments()->whereNull('parent_id')->orderBy('created_at', 'desc')->paginate($limit);
+        return $this->comments()->whereNull('parent_id')->orderBy('created_at', 'desc')->limit($limit)->get();
     }
 }
