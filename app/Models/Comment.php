@@ -14,7 +14,8 @@ class Comment extends Model
     protected $visible = [
         'id', 'profile_id', 'text',
         'author', 'likes_count', 'liked',
-        'comments_count'
+        'comments_count',
+        'created_at', 'updated_at'
     ];
 
     public function author()
