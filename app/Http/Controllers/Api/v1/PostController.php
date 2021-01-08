@@ -26,7 +26,7 @@ class PostController extends Controller
 
     public function index(Request $request)
     {
-        return response()->json(Post::all());
+        return response()->json(Post::where('visible', 1)->get());
     }
 
     public function store(Request $request)
@@ -116,8 +116,10 @@ class PostController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-
+      $post = Post::find($id);
+      $post->update($request->all());
+      return response(json_encode($post), 200)->header('Content-Type', 'text/json');
     }
 }

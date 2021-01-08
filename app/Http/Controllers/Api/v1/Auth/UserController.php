@@ -56,7 +56,7 @@ class UserController extends Controller
 		$profile->user_id = $user->id;
 		$profile->save();
 
-		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
+		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken, 'profile' => $profile]);
 	}
 
 	public function login(Request $request)
@@ -80,6 +80,11 @@ class UserController extends Controller
 			]), 400)->header('Content-Type', 'text/json');
 		}
 
-		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken ]);
-	}
+		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken, 'profile' => $user->profile ]);
+  }
+  
+  public function posts($userId) {
+    
+    return response()->json(User::find($userId)->profile->posts);
+  }
 }

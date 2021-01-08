@@ -15,4 +15,8 @@ class Profile extends Model
     {
         return $this->belongsToMany('App\Model\Post', 'bookmarks', 'profile_id', 'post_id');
     }
+
+    public function posts() {
+      return $this->hasMany('App\Models\Post', 'profile_id');
+    }
 }

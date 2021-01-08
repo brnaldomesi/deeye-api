@@ -30,6 +30,7 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
   Route::get('/posts', 'App\Http\Controllers\Api\v1\PostController@index');
   Route::get('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@show');
+  Route::put('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@update');
   Route::post('/posts', 'App\Http\Controllers\Api\v1\PostController@store');
   
   Route::post('/attachments', 'App\Http\Controllers\Api\v1\AttachmentController@store');
@@ -39,4 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
   Route::get('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@index');
   Route::post('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@store');
+
+  Route::get('/profiles/{profileId}/posts', 'App\Http\Controllers\Api\v1\ProfileController@posts');
 });

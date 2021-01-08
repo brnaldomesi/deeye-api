@@ -15,12 +15,14 @@ class Post extends Model
     ];
 
     protected $visible = [
-        'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'created_at', 'updated_at',
+        'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'visible', 'created_at', 'updated_at',
         'author', 'likes_count', 'liked', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors', 'bookmarkers_count',
         'recent_comments',
         'missing_post_content', 'post_attachments', 'post_source'
     ];
+
+    protected $guarded = [];
 
     public function writer()
     {
