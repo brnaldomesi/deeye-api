@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Post;
+use App\Models\Attachment;
+use App\Models\Activity;
+use App\Models\Comment;
+use App\Models\MissingPost;
+use App\Models\PostAttachment;
 
 use App\Repositories\PostRepository;
 
@@ -122,4 +126,21 @@ class PostController extends Controller
       $post->update($request->all());
       return response(json_encode($post), 200)->header('Content-Type', 'text/json');
     }
-}
+
+    public function delete($id)
+    {
+      $attachmentIds = PostAttachment::where('post_id', $id)->pluck('attachment_id')->all();
+      $fileUrls = Attachment::whereIn('id', $attachmentIds)->pluck('path')->map(function ($att) {
+        return 'public/' . $att;
+      })->all();
+      Storage::delete($fileUrls);
+      PostAttachment::where('post_id', $id)->delete();
+      Attachment::whereIn('id', $attachmentIds)->delete();
+      
+      $activityId = Post::find($id)->activity_id;
+      Activity::where('id', $activityId)->delete();
+      MissingPost::where('post_id', $id)->delete();
+      Post::find($id)->delete();
+      return response(json_encode(['id' => $id]), 200)->header('Content-Type', 'text/json');
+    }
+  }
