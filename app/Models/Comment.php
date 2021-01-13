@@ -25,7 +25,7 @@ class Comment extends Model
 
     public function activity()
     {
-        return $this->belongsTo('App\Models\Activity', 'activity_id');
+        return $this->belongsTo('App\Models\Activity');
     }
 
     public function post()
@@ -45,7 +45,7 @@ class Comment extends Model
 
     public function getLikesCountAttribute()
     {
-        return $this->activity->likes()->count();
+        return $this->activity->likes;
     }
 
     public function getLikedAttribute()
@@ -55,7 +55,7 @@ class Comment extends Model
             return false;
         }
         $profile = Profile::where('user_id', $user->id)->first();
-        return $this->activity->likes()->where('profile_id', $profile->id)->count() > 0;
+        return $this->activity->actions()->where([['profile_id', $profile->id], ['action_type', 'like']])->count() > 0;
     }
 
     public function getCommentsCountAttribute()

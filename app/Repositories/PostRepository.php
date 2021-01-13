@@ -15,7 +15,6 @@ class PostRepository
     public function createPost($values)
     {
         $activity = new Activity;
-        $activity->activity_type = 'Post';
         $activity->save();
 
         $params = ['post_type', 'description', 'link', 'parent_id'];

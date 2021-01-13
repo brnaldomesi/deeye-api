@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 class Post extends Model
 {
     protected $appends = [
-        'likes_count', 'liked', 'shares_count', 'shared', 'saved',
+        'likes_count', 'liked', 'reported', 'saved', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors',
         'recent_comments',
         'author', 'missing_post_content', 'post_attachments', 'source', 'bookmarkers_count',
@@ -16,7 +16,7 @@ class Post extends Model
 
     protected $visible = [
         'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'visible', 'created_at', 'updated_at',
-        'author', 'likes_count', 'liked', 'shares_count', 'shared', 'saved',
+        'author', 'likes_count', 'liked', 'saved', 'reported', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors', 'bookmarkers_count',
         'recent_comments',
         'missing_post_content', 'post_attachments', 'post_source'
@@ -31,7 +31,7 @@ class Post extends Model
 
     public function activity()
     {
-        return $this->belongsTo('App\Models\Activity', 'activity_id');
+        return $this->belongsTo('App\Models\Activity');
     }
 
     public function missingPost()
@@ -86,7 +86,7 @@ class Post extends Model
 
     public function getLikesCountAttribute()
     {
-        return $this->activity->likes()->count();
+        return $this->activity->likes;
     }
 
     public function getLikedAttribute()
@@ -96,7 +96,17 @@ class Post extends Model
             return false;
         }
         $profile = Profile::where('user_id', $user->id)->first();
-        return $this->activity->likes()->where('profile_id', $profile->id)->count() > 0;
+        return $this->activity->actions()->where([['profile_id', $profile->id], ['action_type', 'like']])->count() > 0;
+    }
+
+    public function getReportedAttribute()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return false;
+        }
+        $profile = Profile::where('user_id', $user->id)->first();
+        return $this->activity->actions()->where([['profile_id', $profile->id], ['action_type', 'report']])->count() > 0;
     }
 
     public function getSharesCountAttribute()
@@ -117,7 +127,7 @@ class Post extends Model
     public function getSavedAttribute()
     {
         $profile = Profile::where('user_id', Auth::user()->id)->first();
-        return $this->bookmarkers()->where('profile_id', $profile->id)->count() > 0;
+        return $this->activity->actions()->where([['profile_id', $profile->id], ['action_type', 'save']])->count() > 0;
     }
 
     public function getCommentsCountAttribute()

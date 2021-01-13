@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,8 +15,10 @@ use App\Models\Post;
 use App\Models\Attachment;
 use App\Models\Activity;
 use App\Models\Comment;
+use App\Models\Profile;
 use App\Models\MissingPost;
 use App\Models\PostAttachment;
+use App\Models\Action;
 
 use App\Repositories\PostRepository;
 
@@ -124,7 +127,93 @@ class PostController extends Controller
     {
       $post = Post::find($id);
       $post->update($request->all());
-      return response(json_encode($post), 200)->header('Content-Type', 'text/json');
+      return response()->json($post);
+    }
+
+    public function report(Request $request, $id)
+    {
+      $post = Post::find($id);
+      $reported = $post->reported;
+      if(!$reported) {
+        $user = Auth::user();
+        $profile = Profile::where('user_id', $user->id)->first();
+
+        $profileId = $profile->id;
+        $activityId = $post->activity_id;
+        $activity = Activity::find($activityId);
+        $activity->reported += 1;
+        $activity->save();
+
+        $action = new Action;
+        $action->activity_id = $activityId;
+        $action->profile_id = $profileId;
+        $action->type = 'Post';
+        $action->action_type = 'report';
+        $action->save();
+      }
+      return response()->json($post);
+    }
+
+    public function save(Request $request, $id)
+    {
+      $post = Post::find($id);
+      $saved = $post->saved;
+      $user = Auth::user();
+      $profile = Profile::where('user_id', $user->id)->first();
+
+      $profileId = $profile->id;
+      $activityId = $post->activity_id;
+      $activity = Activity::find($activityId);
+      if($saved) {
+        $activity->saved -= 1;
+      } else {
+        $activity->saved += 1;
+      }
+      $activity->save();
+
+      if($saved) {
+        Action::where([['profile_id', $profile->id], ['action_type', 'save'], ['activity_id', $activityId]])->delete();
+      } else {
+        $action = new Action;
+        $action->activity_id = $activityId;
+        $action->profile_id = $profileId;
+        $action->type = 'Post';
+        $action->action_type = 'save';
+        $action->save();
+      }
+      
+      return response()->json($post);
+    }
+
+    public function like(Request $request, $id)
+    {
+      $post = Post::find($id);
+      $liked = $post->liked;
+      $user = Auth::user();
+      $profile = Profile::where('user_id', $user->id)->first();
+
+      $profileId = $profile->id;
+      $activityId = $post->activity_id;
+      $activity = Activity::find($activityId);
+      if($liked) {
+        $activity->likes -= 1;
+      } else {
+        $activity->likes += 1;
+      }
+      $activity->save();
+
+      if($liked) {
+        Action::where([['profile_id', $profile->id], ['action_type', 'like'], ['activity_id', $activityId]])->delete();
+      } else {
+        $action = new Action;
+        $action->activity_id = $activityId;
+        $action->profile_id = $profileId;
+        $action->type = 'Post';
+        $action->action_type = 'like';
+        $action->save();
+      }
+      
+      return response()->json($post);
     }
 
     public function delete($id)

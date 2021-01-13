@@ -28,7 +28,6 @@ class CommentRepository
     public function createCommentForPost($postId, $text)
     {
         $activity = new Activity;
-        $activity->activity_type = 'Comment';
         $activity->save();
 
         $post = Post::find($postId);
@@ -47,7 +46,6 @@ class CommentRepository
     public function createCommentForComment($parentId, $text)
     {
         $activity = new Activity;
-        $activity->activity_type = 'Comment';
         $activity->save();
 
         $parent = Comment::find($parentId);
