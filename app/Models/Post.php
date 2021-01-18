@@ -126,8 +126,12 @@ class Post extends Model
     
     public function getSavedAttribute()
     {
-        $profile = Profile::where('user_id', Auth::user()->id)->first();
-        return $this->activity->actions()->where([['profile_id', $profile->id], ['action_type', 'save']])->count() > 0;
+      $user = Auth::user();
+      if (!$user) {
+          return false;
+      }
+      $profile = Profile::where('user_id', Auth::user()->id)->first();
+      return $this->activity->actions()->where([['profile_id', $profile->id], ['action_type', 'save']])->count() > 0;
     }
 
     public function getCommentsCountAttribute()

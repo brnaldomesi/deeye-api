@@ -27,6 +27,8 @@ Route::prefix('auth')->group(function () {
   Route::post('/signup', [UserController::class , 'signup']);
 });
 
+Route::get('/posts/unsigned', 'App\Http\Controllers\Api\v1\PostController@listForUnsigned');
+
 Route::middleware('auth:sanctum')->group(function () {
   Route::get('/posts', 'App\Http\Controllers\Api\v1\PostController@index');
   Route::get('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@show');

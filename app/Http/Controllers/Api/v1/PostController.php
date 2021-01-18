@@ -31,6 +31,11 @@ class PostController extends Controller
         $this->postRepository = $postRepository;
     }
 
+    public function listForUnsigned(Request $request)
+    {
+        return response()->json(Post::where('visible', 1)->get());
+    }
+
     public function index(Request $request)
     {
         return response()->json(Post::where('visible', 1)->get());
