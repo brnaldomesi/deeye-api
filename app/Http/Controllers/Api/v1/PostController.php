@@ -41,6 +41,38 @@ class PostController extends Controller
         return response()->json(Post::where('visible', 1)->get());
     }
 
+    public function share(Request $request, $id) {
+      $user = User::find(Auth::user()->id);
+      $post = Post::find($id);
+      $description = $request->description;
+      $sourceId = $post->post_source ? $post->post_source->id : $id;
+
+
+      $activity = Post::find($sourceId)->activity;
+      $activity->share += 1;
+      $activity->save();
+
+      $action = new Action;
+      $action->activity_id = $activity->id;
+      $action->profile_id = $user->profile->id;
+      $action->type = 'Post';
+      $action->action_type = 'share';
+      $action->save();
+      
+      $newActivity = new Activity;
+      $newActivity->save();
+
+      $newPost = new Post;
+      $newPost->post_type = "Share";
+      $newPost->description = $description;
+      $newPost->profile_id = $user->profile->id;
+      $newPost->parent_id = $sourceId;
+      $newPost->activity_id = $newActivity->id;
+      $newPost->save();
+
+      return response()->json($newPost); 
+    }
+
     public function store(Request $request)
     {
         $inputs = $request->all();
@@ -232,6 +264,7 @@ class PostController extends Controller
       Attachment::whereIn('id', $attachmentIds)->delete();
       
       $activityId = Post::find($id)->activity_id;
+      Action::where('activity_id', $activityId)->delete();
       Activity::where('id', $activityId)->delete();
       MissingPost::where('post_id', $id)->delete();
       Post::find($id)->delete();

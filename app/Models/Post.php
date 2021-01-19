@@ -11,7 +11,7 @@ class Post extends Model
         'likes_count', 'liked', 'reported', 'saved', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors',
         'recent_comments',
-        'author', 'missing_post_content', 'post_attachments', 'source', 'bookmarkers_count',
+        'author', 'missing_post_content', 'post_attachments', 'post_source', 'bookmarkers_count',
     ];
 
     protected $visible = [
@@ -76,7 +76,7 @@ class Post extends Model
 
     public function getPostSourceAttribute()
     {
-        return $this->soure;
+        return $this->source;
     }
 
     public function getBookmarkersCountAttribute()

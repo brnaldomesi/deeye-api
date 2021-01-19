@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('/posts/{id}/like', 'App\Http\Controllers\Api\v1\PostController@like');
   Route::delete('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@delete');
   Route::post('/posts', 'App\Http\Controllers\Api\v1\PostController@store');
+  Route::post('/posts/{id}/share', 'App\Http\Controllers\Api\v1\PostController@share');
   
   Route::post('/attachments', 'App\Http\Controllers\Api\v1\AttachmentController@store');
   
