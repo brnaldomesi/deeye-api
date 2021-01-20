@@ -31,14 +31,15 @@ class PostController extends Controller
         $this->postRepository = $postRepository;
     }
 
-    public function listForUnsigned(Request $request)
-    {
-        return response()->json(Post::where('visible', 1)->get());
-    }
-
     public function index(Request $request)
     {
-        return response()->json(Post::where('visible', 1)->get());
+      $user = Auth::user();
+      if($user) {
+        $activityIds = Action::where([['profile_id', $user->profile->id], ['action_type', 'hide']])->pluck('activity_id')->all();
+        return response()->json(Post::whereNotIn('activity_id', $activityIds)->get());
+      } else {
+        return response()->json(Post::all());
+      }
     }
 
     public function share(Request $request, $id) {
@@ -219,6 +220,28 @@ class PostController extends Controller
         $action->save();
       }
       
+      return response()->json($post);
+    }
+
+    public function hide(Request $request, $id)
+    {
+      $post = Post::find($id);
+      $user = Auth::user();
+      $profile = Profile::where('user_id', $user->id)->first();
+
+      $profileId = $profile->id;
+      $activityId = $post->activity_id;
+      $activity = Activity::find($activityId);
+      $activity->hide += 1;
+      $activity->save();
+
+      $action = new Action;
+      $action->activity_id = $activityId;
+      $action->profile_id = $profileId;
+      $action->type = 'Post';
+      $action->action_type = 'hide';
+      $action->save();
+
       return response()->json($post);
     }
 

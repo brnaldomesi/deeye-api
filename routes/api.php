@@ -27,7 +27,7 @@ Route::prefix('auth')->group(function () {
   Route::post('/signup', [UserController::class , 'signup']);
 });
 
-Route::get('/posts/unsigned', 'App\Http\Controllers\Api\v1\PostController@listForUnsigned');
+Route::get('/posts/unsigned', 'App\Http\Controllers\Api\v1\PostController@index');
 
 Route::middleware('auth:sanctum')->group(function () {
   Route::get('/posts', 'App\Http\Controllers\Api\v1\PostController@index');
@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('/posts/{id}/save', 'App\Http\Controllers\Api\v1\PostController@save');
   Route::post('/posts/{id}/share', 'App\Http\Controllers\Api\v1\PostController@share');
   Route::put('/posts/{id}/like', 'App\Http\Controllers\Api\v1\PostController@like');
+  Route::put('/posts/{id}/hide', 'App\Http\Controllers\Api\v1\PostController@hide');
   Route::delete('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@delete');
   Route::post('/posts', 'App\Http\Controllers\Api\v1\PostController@store');
   Route::post('/posts/{id}/share', 'App\Http\Controllers\Api\v1\PostController@share');

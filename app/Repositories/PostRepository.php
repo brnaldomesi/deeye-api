@@ -25,7 +25,6 @@ class PostRepository
                 $post->$key = $values[$key];
             }
         }
-        $post->visible = 1;
         $post->activity_id = $activity->id;
         $user = User::find(Auth::user()->id);
         $post->profile_id = $user->profile->id;

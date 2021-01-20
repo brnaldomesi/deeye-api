@@ -11,15 +11,13 @@ class Post extends Model
         'likes_count', 'liked', 'reported', 'saved', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors',
         'recent_comments',
-        'author', 'missing_post_content', 'post_attachments', 'post_source', 'bookmarkers_count',
+        'author', 'missing_post_content', 'post_attachments', 'post_source'
     ];
 
     protected $visible = [
-        'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'visible', 'created_at', 'updated_at',
+        'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'created_at', 'updated_at',
         'author', 'likes_count', 'liked', 'saved', 'reported', 'shares_count', 'shared', 'saved',
-        'comments_count', 'recent_commentors', 'bookmarkers_count',
-        'recent_comments',
-        'missing_post_content', 'post_attachments', 'post_source'
+        'comments_count', 'recent_commentors', 'recent_comments', 'missing_post_content', 'post_attachments', 'post_source'
     ];
 
     protected $guarded = [];
@@ -54,11 +52,6 @@ class Post extends Model
         return $this->hasMany('App\Models\Comment', 'post_id');
     }
 
-    public function bookmarkers()
-    {
-        return $this->belongsToMany('App\Models\Profile', 'bookmarks', 'post_id', 'profile_id');
-    }
-
     public function getAuthorAttribute()
     {
         return $this->writer;
@@ -77,11 +70,6 @@ class Post extends Model
     public function getPostSourceAttribute()
     {
         return $this->source;
-    }
-
-    public function getBookmarkersCountAttribute()
-    {
-        return $this->bookmarkers;
     }
 
     public function getLikesCountAttribute()
