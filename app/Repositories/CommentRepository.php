@@ -15,14 +15,14 @@ class CommentRepository
     {
         $limit = config('app.pagination_limit');
         $post = Post::find($postId);
-        return $post->comments()->whereNull('parent_id')->orderBy('created_at', 'desc')->paginate($limit);
+        return $post->comments()->whereNull('parent_id')->orderBy('updated_at', 'desc')->paginate($limit);
     }
 
     public function commentsForComment($commentId)
     {
         $limit = config('app.pagination_limit');
         $comment = Comment::find($commentId);
-        return $comment->comments()->orderBy('created_at', 'desc')->paginate($limit);
+        return $comment->comments()->orderBy('updated_at', 'desc')->paginate($limit);
     }
 
     public function createCommentForPost($postId, $text)

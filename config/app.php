@@ -229,6 +229,6 @@ return [
 
     ],
 
-    'pagination_limit' => env('PAGINATION_LIMIT', 5),
+    'pagination_limit' => env('PAGINATION_LIMIT', 35),
 
 ];

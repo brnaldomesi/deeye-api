@@ -8,19 +8,24 @@ use Illuminate\Support\Facades\Auth;
 class Comment extends Model
 {
     protected $appends = [
-        'likes_count', 'liked', 'comments_count'
+        'likes_count', 'liked', 'comments_count', 'author'
     ];
 
     protected $visible = [
         'id', 'profile_id', 'text',
         'author', 'likes_count', 'liked',
-        'comments_count',
+        'comments_count', 'parent_id',
         'created_at', 'updated_at'
     ];
 
-    public function author()
+    public function writer()
     {
         return $this->belongsTo('App\Models\Profile', 'profile_id');
+    }
+
+    public function getAuthorAttribute()
+    {
+        return $this->writer;
     }
 
     public function activity()

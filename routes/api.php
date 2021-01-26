@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
   Route::get('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@index');
   Route::post('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@store');
+  Route::put('/comments/{commentId}/like', 'App\Http\Controllers\Api\v1\CommentController@like');
 
   Route::get('/profiles/{profileId}/posts', 'App\Http\Controllers\Api\v1\ProfileController@posts');
 });

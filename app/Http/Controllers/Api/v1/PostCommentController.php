@@ -47,7 +47,7 @@ class PostCommentController extends Controller
         
         $comment = $this->commentRepository->createCommentForPost($postId, $request->text);
         
-        return response(json_encode($comment), 201)->header('Content-Type', 'text/json');
+        return response(json_encode($post), 201)->header('Content-Type', 'text/json');
     }
 
     public function update(Request $request)

@@ -99,7 +99,7 @@ class Post extends Model
 
     public function getSharesCountAttribute()
     {
-        return Post::where('post_type', 'Shared')->where('parent_id', $this->id)->count();
+        return Post::where('post_type', 'Share')->where('parent_id', $this->id)->count();
     }
 
     public function getSharedAttribute()
@@ -109,7 +109,7 @@ class Post extends Model
             return false;
         }
         $profile = Profile::where('user_id', $user->id)->first();
-        return Post::where('post_type', 'Shared')->where('parent_id', $this->id)->where('profile_id', $profile->id)->count() > 0;
+        return Post::where('post_type', 'Share')->where('parent_id', $this->id)->where('profile_id', $profile->id)->count() > 0;
     }
     
     public function getSavedAttribute()
@@ -129,13 +129,15 @@ class Post extends Model
 
     public function getRecentCommentorsAttribute()
     {
-        $ids = $this->comments()->groupBy('profile_id')->pluck('profile_id');
-        return Profile::whereIn('id', $ids)->get();
+      $limit = config('app.pagination_limit');
+      $ids = $this->comments()->groupBy('profile_id')->pluck('profile_id');
+      return Profile::whereIn('id', $ids)->orderBy('updated_at', 'desc')->limit($limit)->get();
     }
 
     public function getRecentCommentsAttribute()
     {
         $limit = config('app.pagination_limit');
-        return $this->comments()->whereNull('parent_id')->orderBy('created_at', 'desc')->limit($limit)->get();
+        return $this->comments()->whereNull('parent_id')->orderBy('updated_at', 'desc')->limit($limit)->get();
     }
 }
+ 

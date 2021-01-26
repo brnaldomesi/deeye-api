@@ -291,6 +291,12 @@ class PostController extends Controller
       Activity::where('id', $activityId)->delete();
       MissingPost::where('post_id', $id)->delete();
       Post::find($id)->delete();
+
+      $activityIds = Comment::where('post_id', $id)->pluck('activity_id')->all();
+      Action::whereIn('activity_id', $activityIds)->delete();
+      Activity::whereIn('id', $activityIds)->delete();
+      Comment::where('post_id', $id)->delete();
+
       return response(json_encode(['id' => $id]), 200)->header('Content-Type', 'text/json');
     }
   }
