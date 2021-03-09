@@ -36,9 +36,9 @@ class PostController extends Controller
       $user = Auth::user();
       if($user) {
         $activityIds = Action::where([['profile_id', $user->profile->id], ['action_type', 'hide']])->pluck('activity_id')->all();
-        return response()->json(Post::whereNotIn('activity_id', $activityIds)->get());
+        return response()->json(Post::whereNotIn('activity_id', $activityIds)->orderBy('updated_at', 'desc')->get());
       } else {
-        return response()->json(Post::all());
+        return response()->json(Post::all()->orderBy('updated_at', 'desc'));
       }
     }
 
@@ -130,7 +130,7 @@ class PostController extends Controller
                 ],
                 'missing_post.race' => [
                     'required',
-                    Rule::in(['Black','White','Yellow'])
+                    Rule::in(['Black','White','Yellow', 'American', 'Asian', 'African', 'European', 'Oceanian'])
                 ],
                 'missing_post.eye' => [
                     'required',
