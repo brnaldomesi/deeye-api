@@ -19,7 +19,7 @@ use App\Models\Profile;
 use App\Models\MissingPost;
 use App\Models\PostAttachment;
 use App\Models\Action;
-
+use App\Notifications\PostSupported;
 use App\Repositories\PostRepository;
 
 class PostController extends Controller
@@ -284,6 +284,13 @@ class PostController extends Controller
         $action->save();
       }
       
+      $postOwner = $post->writer->user;
+      $notifyArr = [
+        'avatar_path' => $profile->avatar_path,
+        'name' => $profile->first_name . ' ' . $profile->last_name
+      ];
+      $postOwner->notify(new PostSupported($notifyArr));
+
       return response()->json($post);
     }
 

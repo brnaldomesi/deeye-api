@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'password',
+        'fcm_token'
     ];
 
     /**
@@ -40,6 +41,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function routeNotificationForFcm()
+    {
+      return $this->fcm_token;
+    }
 
     public function profile()
     {

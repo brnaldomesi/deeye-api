@@ -50,10 +50,15 @@ class UserController extends Controller
 		$user = new User;
 		$user->email = $request->email;
 		$user->password = Hash::make($request->password);
+    if($request->fcmToken) {
+      $user->fcm_token = $request->fcmToken;
+    }
 		$user->save();
 
 		$profile = new Profile;
 		$profile->user_id = $user->id;
+    $profile->first_name = 'User';
+    $profile->last_name = $user->id;
 		$profile->save();
 
 		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken, 'profile' => $profile]);
@@ -73,13 +78,17 @@ class UserController extends Controller
 		}
 
 		$user = User::where('email', $request->email)->first();
-
+    
+    
 		if (! $user || ! Hash::check($request->password, $user->password)) {
-			return response(json_encode([
-				'email' => ['The provided credentials are incorrect.'],
-			]), 400)->header('Content-Type', 'text/json');
-		}
-
+      return response(json_encode([
+        'email' => ['The provided credentials are incorrect.'],
+        ]), 400)->header('Content-Type', 'text/json');
+    }
+    if($request->fcmToken) {
+      $user->update(['fcm_token' => $request->fcmToken]);
+    }
+    
 		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken, 'profile' => $user->profile ]);
   }
   
