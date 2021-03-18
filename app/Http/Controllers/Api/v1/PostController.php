@@ -164,8 +164,19 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
       $post = Post::find($id);
-      $post->update($request->all());
-      return response()->json($post);
+      if ($post->post_type === 'MissingPerson') {
+          $missing_post = MissingPost::where('post_id', $id)->get()[0];
+          $missing_post->fullname = $request->fullname;
+          $missing_post->circumstance = $request->circumstance;
+          $missing_post->contact_phone_number1 = $request->contact_phone_number1;
+          $missing_post->contact_phone_number2 = $request->contact_phone_number1;
+          $missing_post->save();
+
+        return response()->json($post);
+      } else {
+        $post->update($request->all());
+        return response()->json($post);
+      }
     }
 
     public function report(Request $request, $id)
