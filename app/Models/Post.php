@@ -139,5 +139,10 @@ class Post extends Model
         $limit = config('app.pagination_limit');
         return $this->comments()->whereNull('parent_id')->orderBy('updated_at', 'desc')->limit($limit)->get();
     }
+
+    public function scopeActive($query, $id)
+    {
+        return $query->where('activity_id', $id);
+    }
 }
  

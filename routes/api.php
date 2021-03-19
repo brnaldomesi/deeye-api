@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Api\v1\Auth\UserController;
+use App\Http\Controllers\Api\v1\AlertController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -53,3 +54,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
   Route::get('/profiles/{profileId}/posts', 'App\Http\Controllers\Api\v1\ProfileController@posts');
 });
+
+Route::get('/alert', 'App\Http\Controllers\Api\v1\AlertController@index');
