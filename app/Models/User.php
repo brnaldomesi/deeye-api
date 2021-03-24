@@ -44,11 +44,16 @@ class User extends Authenticatable
 
     public function routeNotificationForFcm()
     {
-      return $this->fcm_token;
+        return $this->fcm_token;
     }
 
     public function profile()
     {
         return $this->hasOne('App\Models\Profile');
+    }
+
+    public function scopeExceptMe($query, $id)
+    {
+        return $query->where('id', '<>', $id);
     }
 }

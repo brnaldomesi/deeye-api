@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -21,7 +22,7 @@ class UserController extends Controller
 		]);
 
 		$user = User::where('email', $request->email)->first();
-
+		
 		if($user) {
 			return response()->json(['status' => 200, 'msg' => 'Email exist']);
 		} else {
@@ -95,5 +96,13 @@ class UserController extends Controller
   public function posts($userId) {
     
     return response()->json(User::find($userId)->profile->posts);
+  }
+
+  public function location(Request $request) {
+	$id = Auth::user()->id;
+	$user = User::find($id);
+	$user->latitude = $request->latitude;
+	$user->longitude = $request->longitude;
+	return $user->save();
   }
 }

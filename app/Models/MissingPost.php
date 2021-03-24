@@ -16,7 +16,7 @@ class MissingPost extends Model
         return $this->belongsTo('App\Models\Activity', 'activity_id');
     }
 
-    public function scopeMiss($query) 
+    public function scopeMiss($query, $id) 
     {
         return $query->where('post_id', $id);
     }

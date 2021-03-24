@@ -144,5 +144,9 @@ class Post extends Model
     {
         return $query->where('activity_id', $id);
     }
+
+    public function scopeType($query)
+    {
+        return $query->where('type', 'Post');
+    }
 }
- 

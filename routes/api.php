@@ -31,6 +31,7 @@ Route::prefix('auth')->group(function () {
 Route::get('/posts/unsigned', 'App\Http\Controllers\Api\v1\PostController@index');
 
 Route::middleware('auth:sanctum')->group(function () {
+  Route::get('/alerts', 'App\Http\Controllers\Api\v1\AlertController@index');
   Route::get('/posts', 'App\Http\Controllers\Api\v1\PostController@index');
   Route::get('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@show');
   Route::put('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@update');
@@ -53,6 +54,6 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('/comments/{commentId}/like', 'App\Http\Controllers\Api\v1\CommentController@like');
 
   Route::get('/profiles/{profileId}/posts', 'App\Http\Controllers\Api\v1\ProfileController@posts');
-});
 
-Route::get('/alert', 'App\Http\Controllers\Api\v1\AlertController@index');
+  Route::put('/users', 'App\Http\Controllers\Api\v1\Auth\UserController@location');
+});
