@@ -42,4 +42,9 @@ class Action extends Model
     {
         return $query->where('verified', 0);
     }
+
+    public function scopeOfAlert($query, $id)
+    {
+        return $query->orWhere('target_profile_id', 'like', '['.$id.',%')->orWhere('target_profile_id', 'like', '%,'.$id.',%')->orWhere('target_profile_id', 'like', '%,'.$id.']')->orWhere('target_profile_id', 'like', '['.$id.']');
+    }
 }

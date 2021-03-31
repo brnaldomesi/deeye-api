@@ -18,6 +18,6 @@ class AlertController extends Controller
 {
     public function index() {
         $profile = Auth::user()->profile;
-        return Action::ofList($profile->id)->ofUser($profile->id)->ofVerify()->with(['activity', 'post', 'comment', 'profile'])->orderBy('updated_at', 'desc')->get();        
+        return Action::ofAlert($profile->id)->ofVerify()->with(['activity', 'post', 'comment', 'profile'])->orderBy('updated_at', 'desc')->get();
     }
 }

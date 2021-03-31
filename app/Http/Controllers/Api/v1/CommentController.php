@@ -58,7 +58,10 @@ class CommentController extends Controller
         $action = new Action;
         $action->activity_id = $activity_id;
         $action->profile_id = $profileId;
-        $action->target_profile_id = $target_profileId;
+        $temp = Array();
+        $temp[0] = $target_profileId;
+        $user_list = json_encode($temp);
+        $action->target_profile_id = $user_list;
         $action->type = 'Comment';
         // $action->action = ...;
         $action->action_type = 'comment';
@@ -107,7 +110,10 @@ class CommentController extends Controller
         $action->profile_id = $profileId;
         $action->type = 'Comment';
         $action->action_type = 'like';
-        $action->target_profile_id = $target_profileId;
+        $temp = Array();
+        $temp[0] = $target_profileId;
+        $user_list = json_encode($temp);
+        $action->target_profile_id = $user_list;
         $action->save();
         
         if($action->profile_id !== $target_profileId){

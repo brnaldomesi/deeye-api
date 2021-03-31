@@ -20,6 +20,7 @@ use App\Models\Profile;
 use App\Models\MissingPost;
 use App\Models\PostAttachment;
 use App\Models\Action;
+use App\Models\Follow;
 use App\Notifications\PostHided;
 use App\Notifications\MissingPostHided;
 use App\Notifications\PostSupported;
@@ -70,7 +71,10 @@ class PostController extends Controller
       $action->profile_id = $user->profile->id;
       $action->type = 'Post';
       $action->action_type = 'share';
-      $action->target_profile_id = $target_profileId;
+      $temp = Array();
+        $temp[0] = $target_profileId;
+        $user_list = json_encode($temp);
+        $action->target_profile_id = $user_list;
       $action->save();
 
       $newActivity = new Activity;
@@ -102,14 +106,6 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-          // $missing_data = $request->missing_post;
-          // // $missing_location_latitude =  $missing_data["missing_location_latitude"];
-          // $missing_location_latitude =  50.2159;
-          // // return $missing_location_latitude;
-          // // $missing_location_longitude =  $missing_data["missing_location_longitude"];
-          // $missing_location_longitude =  40.802;
-          // $users = DB::select('call getDistance(?, ?, ?)', array($missing_location_latitude,$missing_location_longitude, 9000));
-          // return $users;
       $inputs = $request->all();
       $p_rules = [
         'post_type' => [
@@ -123,100 +119,125 @@ class PostController extends Controller
         ];
         $p_validator = Validator::make($inputs, $p_rules);
         if ($p_validator->fails()) {
-            return response($p_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
+          return response($p_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
         }
-
+        
         $a_rules = [
-            'id' => [
-                'required',
-                'integer'
-            ],
-            'attachment_type' => [
-                'required',
-                Rule::in(['General','Company','Verification'])
+          'id' => [
+            'required',
+            'integer'
+          ],
+          'attachment_type' => [
+            'required',
+            Rule::in(['General','Company','Verification'])
             ]
-        ];
-        foreach ($request->attachments as $attach) {
+          ];
+          foreach ($request->attachments as $attach) {
             $a_validator = Validator::make($attach, $a_rules);
             if ($a_validator->fails()) {
-                return response($a_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
+              return response($a_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
             }
-        }
-
-        if ($request->post_type == 'MissingPerson')
-        {
-            $m_rules = [
-              'missing_post.missing_type' => [
-                  'required',
-                  Rule::in(['Medical_Fragile_Missing','Family_Abduction','Endanger_Run_Away','Run_Away','Missing_person'])
-              ],
-              'missing_post.badge_awarded' => [
-                  'required',
-                  Rule::in(['Awarded','Pending'])
-              ],
-              'missing_post.sex' => [
-                  'required',
-                  Rule::in(['Female','Male'])
-              ],
-              'missing_post.hair' => [
-                  'required',
-                  Rule::in(['Yellow','Wave','Blond','White','Black'])
-              ],
-              'missing_post.race' => [
-                  'required',
-                  Rule::in(['Black','White','Yellow', 'American', 'Asian', 'African', 'European', 'Oceanian'])
-              ],
-              'missing_post.eye' => [
-                  'required',
-                  Rule::in(['Yellow','Brown','Blue','Black'])
-              ],
-          ];
-          $m_validator = Validator::make($inputs, $m_rules);
-          if ($m_validator->fails()) {
-              return response($m_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
           }
           
-          $post = $this->postRepository->createPost($inputs);
-          $target_profileId = $post->profile_id;
-          $liked = $post->liked;
-          $user = Auth::user();
-          $profile = Profile::where('user_id', $user->id)->first();
+          if ($request->post_type == 'MissingPerson')
+          {
+            $current_user_id = Auth::user()->id;
+            $current_user_followers = User::find($current_user_id)->FollowesUserList()->get();
+            $follower_list = '';
+            $list = '';
+            foreach($current_user_followers as $current_user_follower){
+              $follower_list .= $current_user_follower->followes_id;
+              $follower_list .= ',';
+            }
+            $list = rtrim($follower_list, ',');
+            $missing_data = $request->missing_post;
+            $missing_location_latitude =  $missing_data["missing_location_latitude"];
+            $missing_location_longitude =  $missing_data["missing_location_longitude"];
 
-          $profileId = $profile->id;
-          $activityId = $post->activity_id;
+            $users = User::Distance($missing_location_latitude, $missing_location_longitude, 50 * 1.60934, $current_user_id, $list)->get();
 
-          $action = new Action;
-          $action->activity_id = $activityId;
-          $action->profile_id = $profileId;
-          $action->type = 'Post';
-          $action->action_type = 'create_missing';
-          $action->target_profile_id = 0;
-          $action->save();
+            // if($list != ''){
+            //   $users = DB::select('call getDistance(?, ?, ?, ?, ?)', array($missing_location_latitude,$missing_location_longitude, 50 * 1.60934, $current_user_id, $list));
+            // }else {
+            //   $users = DB::select('call getDistance(?, ?, ?, ?, ?)', array($missing_location_latitude,$missing_location_longitude, 50 * 1.60934, $current_user_id, "''"));
+            // }
 
-          $this->postRepository->linkAttachmentsWithPost($request->attachments, $post);
-          $current_user_id = Auth::user()->id;
-          $users = User::exceptMe($current_user_id)->get();
-
-          // $missing_data = $request->missing_post;
-          // $missing_location_latitude =  $missing_data["contact_phone_number1"];
-          // $missing_location_longitude =  $missing_data["contact_phone_number2"];
-          // $users = DB::select('call getDistance(?, ?, ?)', array($missing_location_latitude,$missing_location_longitude, 5));
-
-          $notifyArr = [
-            'avatar_path' => $profile->avatar_path,
-            'name' => $profile->first_name . ' ' . $profile->last_name,
-          ];
-          Notification::send($users, new MissingPostCreated($notifyArr));
+            if($users) {
+              $temp = array();
+              $cnt = 0;
+              foreach($users as $user) {
+                $pro_id = Profile::where('user_id', $user->id)->get('id');
+                $temp[$cnt] = $pro_id[0]->id;
+                $cnt ++;
+              }
+              $user_list = json_encode($temp);
+            }
+            $m_rules = [
+              'missing_post.missing_type' => [
+                'required',
+                Rule::in(['Medical_Fragile_Missing','Family_Abduction','Endanger_Run_Away','Run_Away','Missing_person'])
+              ],
+              'missing_post.badge_awarded' => [
+                'required',
+                Rule::in(['Awarded','Pending'])
+              ],
+              'missing_post.sex' => [
+                'required',
+                Rule::in(['Female','Male'])
+              ],
+              'missing_post.hair' => [
+                'required',
+                Rule::in(['Yellow','Wave','Blond','White','Black'])
+              ],
+              'missing_post.race' => [
+                'required',
+                Rule::in(['Black','White','Yellow', 'American', 'Asian', 'African', 'European', 'Oceanian'])
+              ],
+              'missing_post.eye' => [
+                'required',
+                Rule::in(['Yellow','Brown','Blue','Black'])
+              ],
+            ];
+            $m_validator = Validator::make($inputs, $m_rules);
+            if ($m_validator->fails()) {
+              return response($m_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
+            }
+            
+            $post = $this->postRepository->createPost($inputs);
+            $target_profileId = $post->profile_id;
+            $liked = $post->liked;
+            $user = Auth::user();
+            $profile = Profile::where('user_id', $user->id)->first();
+            
+            $profileId = $profile->id;
+            $activityId = $post->activity_id;
+            if($users) {
+              $action = new Action;
+              $action->activity_id = $activityId;
+              $action->profile_id = $profileId;
+              $action->type = 'Post';
+              $action->action_type = 'create_missing';
+              $action->target_profile_id = $user_list;
+              $action->save();
+            }
+            
+            $this->postRepository->linkAttachmentsWithPost($request->attachments, $post);
+            
+            $notifyArr = [
+              'avatar_path' => $profile->avatar_path,
+              'name' => $profile->first_name . ' ' . $profile->last_name,
+            ];
+          Notification::send($users, new MissingPostCreated($notifyArr));        
           return response(json_encode($post), 201)->header('Content-Type', 'text/json');
         }else{
           $post = $this->postRepository->createPost($inputs);
           $this->postRepository->linkAttachmentsWithPost($request->attachments, $post);
           return response(json_encode($post), 201)->header('Content-Type', 'text/json');
         }
-    }
-
-    public function show(Request $request, $id)
-    {
+      }
+      
+      public function show(Request $request, $id)
+      {
         $post = Post::find($id);
 
         if (!$post)
@@ -267,7 +288,10 @@ class PostController extends Controller
         $action->profile_id = $profileId;
         $action->type = 'Post';
         $action->action_type = 'report';
-        $action->target_profile_id = $target_profileId;
+        $temp = Array();
+        $temp[0] = $target_profileId;
+        $user_list = json_encode($temp);
+        $action->target_profile_id = $user_list;
         $action->save();
 
         if($action->profile_id !== $target_profileId){ 
@@ -313,7 +337,10 @@ class PostController extends Controller
         $action->profile_id = $profileId;
         $action->type = 'Post';
         $action->action_type = 'save';
-        $action->target_profile_id = $target_profileId;
+        $temp = Array();
+        $temp[0] = $target_profileId;
+        $user_list = json_encode($temp);
+        $action->target_profile_id = $user_list;
         $action->save();
 
         if($action->profile_id !== $target_profileId){  
@@ -351,7 +378,10 @@ class PostController extends Controller
       $action->profile_id = $profileId;
       $action->type = 'Post';
       $action->action_type = 'hide';
-      $action->target_profile_id = $target_profileId;
+      $temp = Array();
+      $temp[0] = $target_profileId;
+      $user_list = json_encode($temp);
+      $action->target_profile_id = $user_list;
       $action->save();
 
       if($action->profile_id !== $target_profileId){
@@ -396,7 +426,10 @@ class PostController extends Controller
         $action->profile_id = $profileId;
         $action->type = 'Post';
         $action->action_type = 'like';
-        $action->target_profile_id = $target_profileId;
+        $temp = Array();
+        $temp[0] = $target_profileId;
+        $user_list = json_encode($temp);
+        $action->target_profile_id = $user_list;
         $action->save();
 
         if($action->profile_id !== $target_profileId){

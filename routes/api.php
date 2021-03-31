@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Api\v1\Auth\UserController;
+use App\Http\Controllers\Api\v1\FollowController;
 use App\Http\Controllers\Api\v1\AlertController;
 /*
 |--------------------------------------------------------------------------
@@ -56,4 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/profiles/{profileId}/posts', 'App\Http\Controllers\Api\v1\ProfileController@posts');
 
   Route::put('/users', 'App\Http\Controllers\Api\v1\Auth\UserController@location');
+
+  Route::get('/followers', 'App\Http\Controllers\Api\v1\FollowController@index');
+  Route::post('/follow', 'App\Http\Controllers\Api\v1\FollowController@follow');
 });
+
+Route::get('/missing', 'App\Http\Controllers\Api\v1\PostController@missing');

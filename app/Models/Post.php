@@ -5,19 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\Profile;
+use App\Models\Follow;
+
 class Post extends Model
 {
     protected $appends = [
         'likes_count', 'liked', 'reported', 'saved', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors',
         'recent_comments',
-        'author', 'missing_post_content', 'post_attachments', 'post_source'
+        'author', 'missing_post_content', 'post_attachments', 'post_source', 'follow_state'
     ];
 
     protected $visible = [
         'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'created_at', 'updated_at',
         'author', 'likes_count', 'liked', 'saved', 'reported', 'shares_count', 'shared', 'saved',
-        'comments_count', 'recent_commentors', 'recent_comments', 'missing_post_content', 'post_attachments', 'post_source'
+        'comments_count', 'recent_commentors', 'recent_comments', 'missing_post_content', 'post_attachments', 'post_source', 'follow_state'
     ];
 
     protected $guarded = [];
@@ -70,6 +73,19 @@ class Post extends Model
     public function getPostSourceAttribute()
     {
         return $this->source;
+    }
+
+    public function getFollowStateAttribute()
+    {
+        if(Auth::user()){
+            $profile_id = $this->profile_id;
+            $posted_user = Profile::where('id', '=', $profile_id)->get('user_id');
+            $posted_user_id = $posted_user[0]->user_id;
+            $user_id = Auth::user()->id;
+            $follow = Follow::where('followes_id', '=', $user_id)->where('follower_id', '=', $posted_user_id)->get();
+            if(count($follow) == 0) return 0;
+            else return 1;
+        }
     }
 
     public function getLikesCountAttribute()

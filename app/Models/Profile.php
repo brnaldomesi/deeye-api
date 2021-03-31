@@ -14,4 +14,19 @@ class Profile extends Model
     public function posts() {
       return $this->hasMany('App\Models\Post', 'profile_id');
     }
+
+    public function FollowerUserList() 
+    {
+        return $this->belongsTo('App\Models\Follow', 'user_id', 'follower_id');
+    }
+    
+    public function FollowesUserList() 
+    {
+        return $this->belongsTo('App\Models\Profile', 'user_id', 'follwes_id');
+    }
+
+    public function Follows()
+    {
+        return $this->hasMany('App\Models\Follow', 'user_id', 'follower_id');
+    }
 }
