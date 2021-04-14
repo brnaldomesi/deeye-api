@@ -35,7 +35,9 @@ class UserController extends Controller
 		$rules = [
 			'email' => 'required|email',
 			'password' => 'required',
-			'deviceName' => 'required'
+			'deviceName' => 'required',
+      'first_name' => 'required',
+      'last_name' => 'required'
 		];
 		$validator = Validator::make($request->all(), $rules);
 		
@@ -58,8 +60,8 @@ class UserController extends Controller
 
 		$profile = new Profile;
 		$profile->user_id = $user->id;
-    $profile->first_name = 'User';
-    $profile->last_name = $user->id;
+    $profile->first_name = $request->first_name;
+    $profile->last_name = $request->last_name;
 		$profile->save();
 
 		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken, 'profile' => $profile]);
@@ -99,10 +101,10 @@ class UserController extends Controller
   }
 
   public function location(Request $request) {
-	$id = Auth::user()->id;
-	$user = User::find($id);
-	$user->latitude = $request->latitude;
-	$user->longitude = $request->longitude;
-	return $user->save();
+    $id = Auth::user()->id;
+    $user = User::find($id);
+    $user->latitude = $request->latitude;
+    $user->longitude = $request->longitude;
+    return $user->save();
   }
 }

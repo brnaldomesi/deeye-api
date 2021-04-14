@@ -11,7 +11,7 @@ class PostAttachment extends Model
     ];
 
     protected $visible = [
-        'id', 'attachment_type', 'path', 'file_type',
+        'id', 'post_id', 'attachment_id', 'attachment_type', 'path', 'file_type',
     ];
 
     public function post()

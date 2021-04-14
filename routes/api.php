@@ -42,24 +42,26 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('/posts/{id}/like', 'App\Http\Controllers\Api\v1\PostController@like');
   Route::put('/posts/{id}/hide', 'App\Http\Controllers\Api\v1\PostController@hide');
   Route::delete('/posts/{id}', 'App\Http\Controllers\Api\v1\PostController@delete');
-  Route::post('/posts', 'App\Http\Controllers\Api\v1\PostController@store');
+  Route::post('/posts/{id?}', 'App\Http\Controllers\Api\v1\PostController@store');
   Route::post('/posts/{id}/share', 'App\Http\Controllers\Api\v1\PostController@share');
+  Route::post('/posts/{id}/reason', 'App\Http\Controllers\Api\v1\PostController@reason');
   
   Route::post('/attachments', 'App\Http\Controllers\Api\v1\AttachmentController@store');
+  Route::delete('/attachments/{id}', 'App\Http\Controllers\Api\v1\AttachmentController@delete');
   
   Route::get('/posts/{postId}/comments', 'App\Http\Controllers\Api\v1\PostCommentController@index');
   Route::post('/posts/{postId}/comments', 'App\Http\Controllers\Api\v1\PostCommentController@store');
-
+  
   Route::get('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@index');
   Route::post('/comments/{commentId}/comments', 'App\Http\Controllers\Api\v1\CommentController@store');
   Route::put('/comments/{commentId}/like', 'App\Http\Controllers\Api\v1\CommentController@like');
-
+  
   Route::get('/profiles/{profileId}/posts', 'App\Http\Controllers\Api\v1\ProfileController@posts');
-
+  
   Route::put('/users', 'App\Http\Controllers\Api\v1\Auth\UserController@location');
-
+  
   Route::get('/followers', 'App\Http\Controllers\Api\v1\FollowController@index');
   Route::post('/follow', 'App\Http\Controllers\Api\v1\FollowController@follow');
 });
 
-Route::get('/missing', 'App\Http\Controllers\Api\v1\PostController@missing');
+Route::get('/missing/{userId}', 'App\Http\Controllers\Api\v1\PostController@missing');

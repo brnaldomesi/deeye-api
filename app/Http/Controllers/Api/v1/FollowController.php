@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\Follow;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\Action;
+use App\Notifications\PersonFollowed;
+use Illuminate\Support\Facades\Notification;
 
 class FollowController extends Controller
 {
@@ -36,7 +39,29 @@ class FollowController extends Controller
                 $follow = new Follow;
                 $follow->follower_id = $follower_id;
                 $follow->followes_id = $followes_id;
-                return $follow->save();
+                $follow->save();
+                $receiver = User::find($follower_id);
+                $receiver_profile = Profile::where('user_id', $receiver->id)->get('id');
+                $profile = Profile::where('user_id', $followes_id)->first();
+                $action = new Action;
+                $action->activity_id = 0;
+                $action->profile_id = $profile->id;
+                $temp = Array();
+                $temp[0] = $receiver_profile[0]->id;
+                $user_list = json_encode($temp);
+                $action->target_profile_id = $user_list;
+                $action->type = 'User';
+                // $action->active = '';
+                $action->action_type = 'follow';
+                $action->verified = 0;
+                // $action->target_id = '';
+                $action->save();
+                $notifyArr = [
+                    'avatar_path' => $profile->avatar_path,
+                    'name' => $profile->first_name . ' ' . $profile->last_name
+                ];
+                $receiver->notify(new PersonFollowed($notifyArr));
+                return "success";
             }
         } elseif($request->type == 'unfollow') {
             $follow = Follow::getFollowes($follower_id, $followes_id);

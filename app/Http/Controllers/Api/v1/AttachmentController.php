@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 use App\Models\User;
+use App\Models\PostAttachment;
+use App\Models\Attachment;
 
 use App\Repositories\AttachmentRepository;
 
@@ -23,6 +25,15 @@ class AttachmentController extends Controller
         $this->attRepository = $attRepository;
     }
 
+    public function delete($id)
+    {
+        $post_attachment = PostAttachment::find($id);
+        $attachment = Attachment::find($post_attachment->attachment_id);
+        $post_attachment->delete();
+        $attachment->delete();
+        return "success";
+    }
+    
     public function store(Request $request)
     {
         $f_rules = [
@@ -48,4 +59,5 @@ class AttachmentController extends Controller
         }
         return response(json_encode($attach), 201)->header('Content-Type', 'text/json');
     }
+
 }

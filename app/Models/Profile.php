@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Profile extends Model
 {
+
+    protected $appends = [ 'email' ];
+
+    protected $hidden = [ 'user' ];
+
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'user_id');
@@ -28,5 +33,10 @@ class Profile extends Model
     public function Follows()
     {
         return $this->hasMany('App\Models\Follow', 'user_id', 'follower_id');
+    }
+
+    public function getEmailAttribute()
+    {
+        return $this->user->email;
     }
 }

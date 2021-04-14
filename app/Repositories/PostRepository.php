@@ -12,14 +12,17 @@ use App\Models\Activity;
 
 class PostRepository
 {
-    public function createPost($values)
+    public function createPost($values, $id)
     {
         $activity = new Activity;
         $activity->save();
-
+        
         $params = ['post_type', 'description', 'link', 'parent_id'];
-
-        $post = new Post;
+        if($id == 0) {
+            $post = new Post;
+        } else {
+            $post = Post::find($id);
+        }
         foreach ($params as $key) {
             if (isset($values[$key])) {
                 $post->$key = $values[$key];
@@ -29,16 +32,24 @@ class PostRepository
         $user = User::find(Auth::user()->id);
         $post->profile_id = $user->profile->id;
         $post->save();
-
+        
         if ($values['post_type'] == 'MissingPerson') {
-            $this->createMissingPost($values['missing_post'], $post);
+            if($id == 0)
+                $this->createMissingPost($values['missing_post'], $post, $id);
+            // else
+            //     $this->createMissingPost($values['missing_post'], $post, $post->id);
         }
         return $post;
     }
 
-    public function createMissingPost($values, $post)
+    public function createMissingPost($values, $post, $id)
     {
-        $mpost = new MissingPost;
+        if($id == 0)
+            $mpost = new MissingPost;
+        else {
+            $m_id = MissingPost::where('post_id', $id)->get('id');
+            $mpost = MissingPost::find($m_id[0]->id);
+        }
         $params = ['missing_type', 'language', 'badge_awarded', 'duo_location', 'is_draft', 'has_tattoo', 'fullname', 'aka', 'dob', 
             'height_ft', 'height_cm', 'weight_kg', 'weight_lb', 'sex', 'hair', 'race',
             'eye', 'medical_condition', 'missing_since','missing_location_zip', 'missing_location_street', 'missing_location_city', 'missing_location_country', 'missing_location_state', 
@@ -55,12 +66,20 @@ class PostRepository
 
     public function linkAttachmentsWithPost($attachments, $post)
     {
+        $post_attachments = $post->post_attachments;
         foreach ($attachments as $attach) {
-            $pa = new PostAttachment;
-            $pa->post_id = $post->id;
-            $pa->attachment_id = $attach['id'];
-            $pa->attachment_type = $attach['attachment_type'];
-            $pa->save();
+            $cnt = 0;
+            foreach($post_attachments as $att){
+                if($attach['id'] == $att['attachment_id'])
+                    $cnt ++;
+            }
+            if($cnt == 0) {
+                $pa = new PostAttachment;
+                $pa->post_id = $post->id;
+                $pa->attachment_id = $attach['id'];
+                $pa->attachment_type = $attach['attachment_type'];
+                $pa->save();
+            }
         }
     }
 }
