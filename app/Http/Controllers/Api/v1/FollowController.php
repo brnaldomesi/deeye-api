@@ -21,12 +21,13 @@ class FollowController extends Controller
 
         $users = DB::table('follows')
             ->join('profiles', 'profiles.user_id', '=', $type != 0 ? 'follows.follower_id' : 'follows.followes_id')
+            ->join('users', 'profiles.user_id', '=', 'users.id')
             ->where('profiles.first_name', 'like', '%'.$search.'%')
             ->where($type == 0 ? 'follows.follower_id' : 'follows.followes_id', '=', $user_id)
-            ->select('profiles.user_id as id', 'profiles.first_name', 'profiles.last_name', 'profiles.avatar_path')
+            ->select('profiles.user_id as id', 'profiles.first_name', 'profiles.last_name', 'profiles.avatar_path', 'users.email')
             ->get();
 
-        return $users;
+        return response()->json($users);
     }
 
     public function follow(Request $request) {
@@ -61,14 +62,14 @@ class FollowController extends Controller
                     'name' => $profile->first_name . ' ' . $profile->last_name
                 ];
                 $receiver->notify(new PersonFollowed($notifyArr));
-                return "success";
+                return response()->json(["success"]);
             }
         } elseif($request->type == 'unfollow') {
             $follow = Follow::getFollowes($follower_id, $followes_id);
-            return $follow->delete();
+            return response()->json([$follow->delete()]);
         } elseif($request->type == 'remove') {
             $follow = Follow::getFollower($follower_id, $followes_id);
-            return $follow->delete();
+            return response()->json([$follow->delete()]);
         }
     }
 }

@@ -50,23 +50,16 @@ class PostController extends Controller
       $user = Auth::user();
       if($user) {
         $activityIds = Action::where([['profile_id', $user->profile->id], ['action_type', 'hide']])->pluck('activity_id')->all();
-        // $data = Post::whereNotIn('activity_id', $activityIds)->orderBy('updated_at', 'desc')->skip($request->start)->take($request->end)->get();
-        // if(count($data) == 0) {
-        //   $cnt = count(Post::all());
-        //   $data = Post::whereNotIn('activity_id', $activityIds)->orderBy('updated_at', 'desc')->skip($cnt-4)->take($cnt)->get();
-        //   return response()->json($data);
-        // }
-        // return response()->json($data);
         if($request->type == 0) {
           return response()->json(Post::whereNotIn('activity_id', $activityIds)->where('post_type', 'MissingPerson')->orderBy('updated_at', 'desc')->paginate($request->count));
         } else {
-          return response()->json(Post::whereNotIn('activity_id', $activityIds)->where('post_type', '<>', 'MissingPerson')->orderBy('updated_at', 'desc')->paginate($request->count));
+          return response()->json(Post::whereNotIn('activity_id', $activityIds)->orderBy('updated_at', 'desc')->paginate($request->count));
         }
       } else {
         if($request->type == 0)
           $data = Post::where('post_type', 'MissingPerson')->orderBy('updated_at', 'desc')->paginate($request->count);
         else
-          $data = Post::where('post_type', '<>', 'MissingPerson')->orderBy('updated_at', 'desc')->paginate($request->count);
+          $data = Post::orderBy('updated_at', 'desc')->paginate($request->count);
         return response()->json($data);
       }
     }

@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Action extends Model
 {
+    // protected $visible = [
+       
+    // ];
+
+    public function missingPost()
+    {
+      return $this->hasOneThrough(
+        'App\Models\MissingPost',
+        'App\Models\Post',
+        activity_id,
+        post_id,
+        activity_id,
+        id
+      );
+    }
+
     public function profile()
     {
         return $this->belongsTo('App\Models\Profile', 'profile_id');
@@ -45,6 +61,9 @@ class Action extends Model
 
     public function scopeOfAlert($query, $id)
     {
-        return $query->orWhere('target_profile_id', 'like', '['.$id.',%')->orWhere('target_profile_id', 'like', '%,'.$id.',%')->orWhere('target_profile_id', 'like', '%,'.$id.']')->orWhere('target_profile_id', 'like', '['.$id.']');
+        return $query->orWhere('target_profile_id', 'like', '['.$id.',%')
+          ->orWhere('target_profile_id', 'like', '%,'.$id.',%')
+          ->orWhere('target_profile_id', 'like', '%,'.$id.']')
+          ->orWhere('target_profile_id', 'like', '['.$id.']');
     }
 }

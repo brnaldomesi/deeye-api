@@ -31,7 +31,7 @@ class AttachmentController extends Controller
         $attachment = Attachment::find($post_attachment->attachment_id);
         $post_attachment->delete();
         $attachment->delete();
-        return "success";
+        return response()->json(["success"]);
     }
     
     public function store(Request $request)
