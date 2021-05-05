@@ -137,41 +137,41 @@ class PostController extends Controller
             'id' => [
               'required',
               'integer'
-          ],
-          'attachment_type' => [
-            'required',
-            Rule::in(['General','Company','Verification'])
-            ]
-          ];
-          foreach ($request->attachments as $attach) {
-            $a_validator = Validator::make($attach, $a_rules);
-            if ($a_validator->fails()) {
-              return response($a_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
+            ],
+            'attachment_type' => [
+              'required',
+              Rule::in(['General','Company','Verification'])
+              ]
+            ];
+            foreach ($request->attachments as $attach) {
+              $a_validator = Validator::make($attach, $a_rules);
+              if ($a_validator->fails()) {
+                return response($a_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
+              }
             }
           }
-      }
-    
-      if ($request->post_type == 'MissingPerson')
-      {
-        $current_user_id = Auth::user()->id;
-        $current_user_followers = User::find($current_user_id)->FollowesUserList()->get();
-        $follower_list = '';
-        $list = '';
-        foreach($current_user_followers as $current_user_follower){
-          $follower_list .= $current_user_follower->followes_id;
-          $follower_list .= ',';
-        }
-        $list = rtrim($follower_list, ',');
-        $missing_data = $request->missing_post;
-        $missing_location_latitude =  $missing_data["missing_location_latitude"];
-        $missing_location_longitude =  $missing_data["missing_location_longitude"];
-        if($list != '') {
-          $users = User::Distance($missing_location_latitude, $missing_location_longitude, 50 * 1.60934, $current_user_id, $list)->get();
-        } else {
-          $users = User::Distance($missing_location_latitude, $missing_location_longitude, 50 * 1.60934, $current_user_id, "''")->get();
-        }
+          
+          if ($request->post_type == 'MissingPerson')
+          {
+            $current_user_id = Auth::user()->id;
+            $current_user_followers = User::find($current_user_id)->FollowesUserList()->get();
+            $follower_list = '';
+            $list = '';
+            foreach($current_user_followers as $current_user_follower){
+              $follower_list .= $current_user_follower->followes_id;
+              $follower_list .= ',';
+            }
+            $list = rtrim($follower_list, ',');
+            $missing_data = $request->missing_post;
+            $missing_location_latitude =  $missing_data["missing_location_latitude"];
+            $missing_location_longitude =  $missing_data["missing_location_longitude"];
+            if($list != '') {
+              $users = User::Distance($missing_location_latitude, $missing_location_longitude, 50 * 1.60934, $current_user_id, $list)->get();
+            } else {
+              $users = User::Distance($missing_location_latitude, $missing_location_longitude, 50 * 1.60934, $current_user_id, "''")->get();
+            }
             
-        if($users) {
+            if($users) {
         $temp = array();
         $cnt = 0;
         foreach($users as $user) {
@@ -180,9 +180,9 @@ class PostController extends Controller
           $cnt ++;
         }
         $user_list = json_encode($temp);
-        }
-        $m_rules = [
-          'missing_post.missing_type' => [
+      }
+      $m_rules = [
+        'missing_post.missing_type' => [
             'required',
             Rule::in(['Medical_Fragile_Missing','Family_Abduction','Endanger_Run_Away','Run_Away','Missing_person'])
           ],
@@ -196,22 +196,22 @@ class PostController extends Controller
           ],
           'missing_post.hair' => [
             'required',
-            Rule::in(['Yellow','Wave','Blond','White','Black'])
+            Rule::in(['Yellow','Wave','Blond','White','Black','Brown','Gray'])
           ],
           'missing_post.race' => [
             'required',
-            Rule::in(['Black','White','Yellow', 'American', 'Asian', 'African', 'European', 'Oceanian'])
+            Rule::in(['Black','White','Hispanic', 'American', 'Asian', 'African', 'European', 'Oceanian'])
           ],
           'missing_post.eye' => [
             'required',
-            Rule::in(['Yellow','Brown','Blue','Black'])
+            Rule::in(['Yellow','Brown','Blue','Black','Hazel','Green'])
           ],
         ];
         $m_validator = Validator::make($inputs, $m_rules);
         if ($m_validator->fails()) {
           return response($m_validator->messages()->toJson(), 400)->header('Content-Type', 'text/json');
         }
-
+        
         $post = $this->postRepository->createPost($inputs, 0);
         $target_profileId = $post->profile_id;
         $liked = $post->liked;
