@@ -53,7 +53,7 @@ class PostRepository
         $params = ['missing_type', 'language', 'badge_awarded', 'duo_location', 'is_draft', 'has_tattoo', 'fullname', 'aka', 'dob', 
             'height_ft', 'height_cm', 'weight_kg', 'weight_lb', 'sex', 'hair', 'race',
             'eye', 'medical_condition', 'missing_since','missing_location_zip', 'missing_location_street', 'missing_location_city', 'missing_location_country', 'missing_location_state', 
-            'circumstance', 'contact_email', 'contact_phone_number1', 'contact_phone_number2', 'verification_groupchat_link', 'company_name', 'missing_location_latitude', 'missing_location_longitude',
+            'circumstance', 'contact_email', 'contact_phone_number1', 'contact_phone_number2', 'verification_groupchat_link', 'company_name', 'missing_location_latitude', 'missing_location_longitude', 'markinfo', 'contactAgencyName', 'caseUpload',
         ];
         $mpost->post_id = $post->id;
         foreach ($params as $key) {

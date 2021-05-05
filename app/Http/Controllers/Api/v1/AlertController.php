@@ -17,16 +17,6 @@ use App\Models\MissingPost;
 class AlertController extends Controller
 {
     public function index() {
-        // $profile = Auth::user()->profile;
-        // return Action::ofAlert($profile->id)
-        //   ->ofVerify()
-        //   ->with([
-        //     'activity', 
-        //     'post', 
-        //     'comment', 
-        //     'profile'
-        //   ])->orderBy('updated_at', 'desc')->get();
-      
         $profile_id = Auth::user()->profile->id;
         $actions = DB::table('actions')
             ->leftJoin('profiles', 'profiles.id', '=', 'actions.profile_id')
