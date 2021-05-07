@@ -271,15 +271,15 @@ class PostController extends Controller
         $missing_post->circumstance = $request->circumstance;
         $missing_post->contact_phone_number1 = $request->contact_phone_number1;
         $missing_post->contact_phone_number2 = $request->contact_phone_number2;
-        // $missing_post->sex = $request->sex;
-        // // $missing_post->dob = $request->age;
-        // $missing_post->race = $request->race;
-        // $missing_post->hair = $request->hair;
-        // $missing_post->height_ft = $request->height;
-        // $missing_post->height_cm = $request->height;
-        // $missing_post->weight_kg = $request->weight;
-        // $missing_post->weight_lb = $request->weight;
-        // $missing_post->eye = $request->eye;
+        $missing_post->sex = $request->sex;
+        // $missing_post->dob = $request->age;
+        $missing_post->race = $request->race;
+        $missing_post->hair = $request->hair;
+        $missing_post->height_ft = $request->height;
+        $missing_post->height_cm = $request->height;
+        $missing_post->weight_kg = $request->weight;
+        $missing_post->weight_lb = $request->weight;
+        $missing_post->eye = $request->eye;
         $missing_post->save();
         return response()->json($post_data);
       }else{
