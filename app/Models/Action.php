@@ -66,4 +66,19 @@ class Action extends Model
           ->orWhere('target_profile_id', 'like', '%,'.$id.']')
           ->orWhere('target_profile_id', 'like', '['.$id.']');
     }
+
+    public function scopeOfActivity($query, $id)
+    {
+        return $query->where('activity_id', $id);
+    }
+
+    public function scopeOfType($query)
+    {
+        return $query->where('type', 'Post');
+    }
+
+    public function scopeOfActiontype($query)
+    {
+        return $query->where('action_type', 'like')->orWhere('action_type', 'comment');
+    }
 }

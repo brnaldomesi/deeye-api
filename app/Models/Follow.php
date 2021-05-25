@@ -28,4 +28,10 @@ class Follow extends Model
     {
         return $this->belongsTo('App\Models\Profile', 'followes_id', 'user_id');
     }
+
+    public function scopeOfFollowes($query, $id)
+    {
+        return $this->where('follower_id', $id);
+    }
+
 }

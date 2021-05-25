@@ -72,4 +72,9 @@ class User extends Authenticatable
     {
         return $query->whereRaw('((6371 * 2 * atan2(sqrt(sin((pi()/180) * ('.$latitude.' - users.latitude) / 2) * sin((pi()/180) * ('.$latitude.' - users.latitude) / 2) + cos((pi()/180) * (users.latitude)) * cos((pi()/180) * ('.$latitude.')) * sin((pi()/180) * ('.$longitude.' - users.longitude) / 2) * sin((pi()/180) * ('.$longitude.' - users.longitude) / 2)), sqrt(1 - sin((pi()/180) * ('.$latitude.' - users.latitude) / 2) * sin((pi()/180) * ('.$latitude.' - users.latitude) / 2) + cos((pi()/180) * (users.latitude)) * cos((pi()/180) * ('.$latitude.')) * sin((pi()/180) * ('.$longitude.' - users.longitude) / 2) * sin((pi()/180) * ('.$longitude.' - users.longitude) / 2))) <= '.$distance. ') && (users.id <> '.$user_id.')) || (users.id IN ('.$list. ') && (users.id <> '.$user_id.'))');
     }
+
+    public function scopeNotification($query, $list)
+    {
+        return $query->whereIn('id', $list);
+    }
 }

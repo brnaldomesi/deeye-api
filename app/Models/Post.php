@@ -14,13 +14,13 @@ class Post extends Model
         'likes_count', 'liked', 'reported', 'saved', 'shares_count', 'shared', 'saved',
         'comments_count', 'recent_commentors',
         'recent_comments',
-        'author', 'missing_post_content', 'post_attachments', 'post_source', 'follow_state'
+        'author', 'missing_post_content', 'post_attachments', 'post_source', 'follow_state', 'avatar_path', 'full_name'
     ];
 
     protected $visible = [
         'id', 'profile_id', 'post_type', 'description', 'link', 'parent_id', 'created_at', 'updated_at',
         'author', 'likes_count', 'liked', 'saved', 'reported', 'shares_count', 'shared', 'saved',
-        'comments_count', 'recent_commentors', 'recent_comments', 'missing_post_content', 'post_attachments', 'post_source', 'follow_state'
+        'comments_count', 'recent_commentors', 'recent_comments', 'missing_post_content', 'post_attachments', 'post_source', 'follow_state', 'avatar_path', 'full_name'
     ];
 
     protected $guarded = [];
@@ -86,6 +86,24 @@ class Post extends Model
             if(count($follow) == 0) return 0;
             else return 1;
         }
+    }
+
+    public function getAvatarPathAttribute()
+    {
+      if(Auth::user()){
+          $user = Auth::user();
+          $profile = Profile::where('user_id', $user->id)->first();
+          return $profile->avatar_path;
+      }
+    }
+
+    public function getFullNameAttribute()
+    {
+      if(Auth::user()){
+          $user = Auth::user();
+          $profile = Profile::where('user_id', $user->id)->first();
+          return $profile->first_name . ' ' . $profile->last_name;
+      }
     }
 
     public function getLikesCountAttribute()

@@ -92,7 +92,7 @@ class UserController extends Controller
       $user->update(['fcm_token' => $request->fcmToken]);
     }
     
-		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken, 'profile' => $user->profile ]);
+		return response()->json(['auth-token' => $user->createToken($request->deviceName)->plainTextToken, 'profile' => $user->profile, 'user' => $user ]);
   }
   
   public function posts($userId) {

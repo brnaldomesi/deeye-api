@@ -170,7 +170,6 @@ class PostController extends Controller
             } else {
               $users = User::Distance($missing_location_latitude, $missing_location_longitude, 50 * 1.60934, $current_user_id, "''")->get();
             }
-            
             if($users) {
         $temp = array();
         $cnt = 0;
@@ -272,7 +271,15 @@ class PostController extends Controller
         $missing_post->contact_phone_number1 = $request->contact_phone_number1;
         $missing_post->contact_phone_number2 = $request->contact_phone_number2;
         $missing_post->sex = $request->sex;
-        // $missing_post->dob = $request->age;
+        $missing_post->dob = $request->dob;
+        $missing_post->duo_location = $request->duoLocation;
+        $missing_post->markinfo = $request->mark;
+        $missing_post->aka = $request->aka;
+        $missing_post->medical_condition = $request->medicalCondition;
+        $missing_post->has_tattoo = $request->tatoo;
+        $missing_post->language = $request->language;
+        $missing_post->contactAgencyName = $request->contactAgencyName;
+        $missing_post->caseUpload = $request->caseUpload;
         $missing_post->race = $request->race;
         $missing_post->hair = $request->hair;
         $missing_post->height_ft = $request->height;

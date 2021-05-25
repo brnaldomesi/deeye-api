@@ -8,6 +8,7 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Api\v1\Auth\UserController;
 use App\Http\Controllers\Api\v1\FollowController;
 use App\Http\Controllers\Api\v1\AlertController;
+use App\Http\Controllers\Api\v1\SupportController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -57,7 +58,11 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('/comments/{commentId}/like', 'App\Http\Controllers\Api\v1\CommentController@like');
   
   Route::get('/profiles/{profileId}/posts', 'App\Http\Controllers\Api\v1\ProfileController@posts');
-  
+  Route::post('/profiles/{profileId}', 'App\Http\Controllers\Api\v1\ProfileController@store');
+  Route::get('/profiles/{profileId}', 'App\Http\Controllers\Api\v1\ProfileController@show');
+  Route::put('/profiles', 'App\Http\Controllers\Api\v1\ProfileController@update');
+  Route::post('/support/{profileId}', 'App\Http\Controllers\Api\v1\SupportController@store');
+
   Route::put('/users', 'App\Http\Controllers\Api\v1\Auth\UserController@location');
   
   Route::get('/followers', 'App\Http\Controllers\Api\v1\FollowController@index');
