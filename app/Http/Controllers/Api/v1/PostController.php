@@ -287,6 +287,7 @@ class PostController extends Controller
         $missing_post->weight_kg = $request->weight;
         $missing_post->weight_lb = $request->weight;
         $missing_post->eye = $request->eye;
+        $missing_post->missing_since = $request->missingSince;
         $missing_post->save();
         return response()->json($post_data);
       }else{
